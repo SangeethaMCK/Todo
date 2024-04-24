@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TODO</title>
+    <link rel="stylesheet" href="style.css" type="text/css" />
+    <script src="todo.js"></script>
+    <script src="date.js"></script>
+  </head>
+  <body>
+    <div class="container1">
+      <div>
+        <h1>To-Do</h1>
+        <form>
+          <label> Task</label>
+          <input type="text" id="task" required />
+          <input type="date" id="taskdate" required /><br /><br />
+          <label> Details</label>
+          <textarea style="width: 25%" id="taskDetails"> </textarea><br /><br />
+          <label>Priority:</label>
+          <input
+            type="radio"
+            value="high"
+            id="high"
+            name="priority"
+            style="accent-color: red"
+          />
+          <label for="high">High</label>
+          <input
+            type="radio"
+            value="mid"
+            id="mid"
+            name="priority"
+            style="accent-color: orange"
+          />
+          <label for="mid">Medium</label>
+          <input
+            type="radio"
+            value="low"
+            id="low"
+            name="priority"
+            style="accent-color: yellow"
+            checked
+          />
+          <label for="low">Low</label><br /><br />
+          <button type="button" id="add-btn" onclick="savetask()">Save</button>
+        </form>
+      </div>
+      <div class="list">
+        <table>
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Date</th>
+              <th>Details</th>
+              <th>Priority</th>
+            </tr>
+          </thead>
+          <tbody id="taskList">
+            <script>refreshTaskList() </script>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
