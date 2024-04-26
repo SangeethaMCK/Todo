@@ -1,6 +1,6 @@
 *{
     text-align: center;
-    background-color: rgb(127, 255, 212, 0.4);
+    background-color: rgb(127, 255, 212, 0.6);
 }
 .container1{
     margin: auto;
@@ -13,6 +13,7 @@
     border: none;
     height: 30px;
     width: 100px;
+    font-size: medium;
 }
 .edit-btn{
     background-color: black;
@@ -48,4 +49,7 @@ table{
 }
 td,th{
     padding: 10px 10px;
+}
+#date-sort, #priority-sort{
+    border: black solid 2px;
 }

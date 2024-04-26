@@ -21,24 +21,21 @@
           <label>Priority:</label>
           <input
             type="radio"
-            value="high"
-            id="high"
+            value="3"
             name="priority"
             style="accent-color: red"
           />
           <label for="high">High</label>
           <input
             type="radio"
-            value="mid"
-            id="mid"
+            value="2"
             name="priority"
             style="accent-color: orange"
           />
           <label for="mid">Medium</label>
           <input
             type="radio"
-            value="low"
-            id="low"
+            value="1"
             name="priority"
             style="accent-color: yellow"
             checked
@@ -46,6 +43,9 @@
           <label for="low">Low</label><br /><br />
           <button type="button" id="add-btn" onclick="savetask()">Save</button>
         </form>
+        <br>
+        <button type="button" id="date-sort" onclick="sortdate()">Sort by date</button>
+        <button type="button" id="priority-sort" onclick="sortpriority()">Sort by priority</button>
       </div>
       <div class="list">
         <table>

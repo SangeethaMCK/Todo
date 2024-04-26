@@ -67,8 +67,7 @@ function editTask(task, index) {
       break;
     }
   }
-
- const addButton = document.getElementById("add-btn");
+  const addButton = document.getElementById("add-btn");
   addButton.innerHTML = "Save Changes";
 
   addButton.onclick = function () {
@@ -84,22 +83,23 @@ function savetask(index) {
   ) {
     window.alert("Please enter task name and date");
   } else {
-  const taskList = JSON.parse(localStorage.getItem("tasks")) || [];
+    const taskList = JSON.parse(localStorage.getItem("tasks")) || [];
 
-  const task = {
-    name: document.getElementById("task").value,
-    date: document.getElementById("taskdate").value,
-    details: document.getElementById("taskDetails").value ,
-    priority: document.querySelector('input[name="priority"]:checked').value,
-  };
-if(index || Number(index)===0)taskList[index] = task; 
-else taskList.push(task);
-  saveTasksToLocalStorage(taskList);
-  refreshTaskList();
-  resetForm();
-}}
+    const task = {
+      name: document.getElementById("task").value,
+      date: document.getElementById("taskdate").value,
+      details: document.getElementById("taskDetails").value,
+      priority: document.querySelector('input[name="priority"]:checked').value,
+    };
+    if (index || Number(index) === 0) taskList[index] = task;
+    else taskList.push(task);
+    saveTasksToLocalStorage(taskList);
+    refreshTaskList();
+    resetForm();
+  }
+}
 
-  // Reset form 
+// Reset form
 function resetForm() {
   document.getElementById("task").value = "";
   document.getElementById("taskdate").value = "";
@@ -110,6 +110,43 @@ function resetForm() {
   }
   radios[2].checked = true;
   let addButton = document.getElementById("add-btn");
-  addButton.innerHTML = "Save Task";
-  addButton.onclick = savetask;
+  addButton.innerHTML = "Save";
+  addButton.onclick = function () {
+    savetask();
+  };
+}
+
+//sorting
+
+function sortdate() {
+  const taskList = JSON.parse(localStorage.getItem("tasks")) || [];
+
+  taskList.sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    return dateA - dateB;
+  });
+
+  const taskListElement = document.getElementById("taskList");
+  taskListElement.innerHTML = "";
+
+  taskList.forEach(function (task, index) {
+    const row = createTaskRow(task, index);
+    taskListElement.appendChild(row);
+  });
+}
+
+function sortpriority() {
+  const taskList = JSON.parse(localStorage.getItem("tasks")) || [];
+
+  taskList.sort((a, b) => {
+    return b.priority - a.priority;
+  });
+  const taskListElement = document.getElementById("taskList");
+  taskListElement.innerHTML = "";
+
+  taskList.forEach(function (task, index) {
+    const row = createTaskRow(task, index);
+    taskListElement.appendChild(row);
+  });
 }
