@@ -4,37 +4,39 @@ const localhostAddress = "http://localhost:3000/task";
 async function refreshTaskList() {
   try {
     const response = await fetch(localhostAddress);
-    if (!response.ok) {
-      throw new Error("Error fetching tasks:", response.statusText);
-    }
     const taskList = await response.json();
-
-    taskListElement = document.getElementById("taskList");
-    taskListElement.innerHTML = "";
-
-    taskList.forEach(function (task, index) {
-      const row = createTaskRow(task, index);
-      taskListElement.appendChild(row);
-    });
-  } catch (error) {
+    renderTaskList(taskList);
+  } 
+  catch (error) {
     console.error(error);
   }
+}
+
+function renderTaskList(taskList) {
+  const taskListElement = document.getElementById("taskList");
+  taskListElement.innerHTML = "";
+
+  taskList.forEach((task, index) => {
+    const row = createTaskRow(task, index);
+    taskListElement.appendChild(row);
+  });
 }
 
 // Function to create a row for a task
 function createTaskRow(task, index) {
   const row = document.createElement("tr");
+
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
   checkbox.id = `isDone`;
 
-if( task.completed== true) checkbox.checked=true;
+if( task.completed=== true) checkbox.checked=true;
 
   checkbox.addEventListener("change", function(){
     if(checkbox.checked){
       task.completed= true;
     }
-    else if(!checkbox.checked){
+    else{
       task.completed= false;
     }
     taskCompleted(task, index);
@@ -78,13 +80,8 @@ async function delTask(index) {
     });
     const taskList = await response.json();
 
-    taskListElement = document.getElementById("taskList");
-    taskListElement.innerHTML = "";
+   renderTaskList(taskList);
 
-    taskList.forEach(function (task, index) {
-      const row = createTaskRow(task, index);
-      taskListElement.appendChild(row);
-    });
   } catch (error) {
     console.error(error);
   }
@@ -185,53 +182,40 @@ function resetForm() {
 
 async function taskCompleted(task, index) {
   try {
-    // alert(`${task.name} task done`);
-
-    const updatedTask = {
-      ...task,
-      // completed: true
-    };
-
     const response = await fetch(`${localhostAddress}/${index}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedTask),
+      body: JSON.stringify(task),
     });
 
-    if (!response.ok) {
-      throw new Error("Error marking task as completed:", response.statusText);
-    }
-
     const taskList = await response.json();
+    
     renderTaskList(taskList);
   } catch (error) {
     console.error(error);
   }
 }
 
+refreshTaskList();
+
+
+
+
+
+
 
 // Function to sort tasks by date
-function sortdate() {
-  const taskList = JSON.parse(localStorage.getItem("tasks")) || [];
-  taskList.sort((a, b) => new Date(a.date) - new Date(b.date));
-  renderTaskList(taskList);
-}
+// function sortdate() {
+//   const taskList = JSON.parse(localStorage.getItem("tasks")) || [];
+//   taskList.sort((a, b) => new Date(a.date) - new Date(b.date));
+//   renderTaskList(taskList);
+// }
 
-// Function to sort tasks by priority
-function sortpriority() {
-  const taskList = JSON.parse(localStorage.getItem("tasks")) || [];
-  taskList.sort((a, b) => b.priority - a.priority);
-  renderTaskList(taskList);
-}
-function renderTaskList(taskList) {
-  const taskListElement = document.getElementById("taskList");
-  taskListElement.innerHTML = "";
-
-  taskList.forEach((task, index) => {
-    const row = createTaskRow(task, index);
-    taskListElement.appendChild(row);
-  });
-}
-refreshTaskList();
+// // Function to sort tasks by priority
+// function sortpriority() {
+//   const taskList = JSON.parse(localStorage.getItem("tasks")) || [];
+//   taskList.sort((a, b) => b.priority - a.priority);
+//   renderTaskList(taskList);
+// }

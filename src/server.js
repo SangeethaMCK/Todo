@@ -7,12 +7,6 @@ const port = 3000;
 
 app.use(bodyParser.json());
 
-// app.use((req,res,next)=>{
-//   console.log(req.method)
-//   console.log(req.path)
-//   next()
-// })
-
 const staticPath = path.join(__dirname, "../public");
 app.use(express.static(staticPath));
 
@@ -87,21 +81,15 @@ app.put("/task/:index", (req, res) => {
 
 app.patch("/task/:index", (req, res) => {
   const index = req.params.index;
-  const updatedFields = req.body;
+  const updatedTask = req.body;
 
   let tasks = readTasksFromFile();
-  let taskToUpdate = tasks[index];
 
-  for (let field in updatedFields) {
-    if (taskToUpdate.hasOwnProperty(completed)) {
-      taskToUpdate[completed] = updatedFields[completed];
-    }
-  }
+  tasks[index].completed = updatedTask.completed;
 
-  tasks[index] = taskToUpdate;
   writeTasksToFile(tasks);
 
-  res.json(taskToUpdate);
+  res.json(tasks);
 });
 
 
