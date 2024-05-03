@@ -39,9 +39,8 @@ function writeTasksToFile(tasks) {
   }
 }
 
-// Endpoint to get all tasks
+
 app.get("/task", (req, res) => {
-  // console.log("GET request received");
   const tasks = readTasksFromFile();
   res.json(tasks);
 });
@@ -50,46 +49,61 @@ app.get("/task", (req, res) => {
 app.post("/task", (req, res) => {
   const newtask = req.body;
   const taskList = readTasksFromFile();
+
   taskList.push(newtask);
+
   writeTasksToFile(taskList);
+
   const newtaskList = readTasksFromFile();
+
   res.json(newtaskList);
 });
 
 app.delete("/task/:index", (req, res) => {
-  tasks = readTasksFromFile();
   const index = req.params.index;
+
+  tasks = readTasksFromFile();
   tasks.splice(index, 1);
+
   writeTasksToFile(tasks);
+
   const newtaskList = readTasksFromFile();
+
   res.json(newtaskList);
 });
 
-// app.patch("/task/:index", (req, res) => {
-//   const index = req.params.index;
-//   const updatedTask = req.body;
-
-//   let tasks = readTasksFromFile();
-
-//   tasks[index] = updatedTask;
-
-//   writeTasksToFile(tasks);
-
-//   res.json(tasks[index]);
-// });
-
 app.put("/task/:index", (req, res) => {
-  console.log("in put method")
   const index = req.params.index;
   const updatedTask = req.body;
-  console.log(updatedTask)
+
   let tasks = readTasksFromFile();
 
   tasks[index] = updatedTask;
 
   writeTasksToFile(tasks);
+
   res.json(tasks);
 });
+
+app.patch("/task/:index", (req, res) => {
+  const index = req.params.index;
+  const updatedFields = req.body;
+
+  let tasks = readTasksFromFile();
+  let taskToUpdate = tasks[index];
+
+  for (let field in updatedFields) {
+    if (taskToUpdate.hasOwnProperty(completed)) {
+      taskToUpdate[completed] = updatedFields[completed];
+    }
+  }
+
+  tasks[index] = taskToUpdate;
+  writeTasksToFile(tasks);
+
+  res.json(taskToUpdate);
+});
+
 
 app.listen(port, () => {
   console.log("Server is running on port", port);

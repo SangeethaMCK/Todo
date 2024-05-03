@@ -24,16 +24,21 @@ async function refreshTaskList() {
 // Function to create a row for a task
 function createTaskRow(task, index) {
   const row = document.createElement("tr");
-
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
-  checkbox.id = `isDone${index}`;
-  // checkbox.addEventListener("change", function () {
-  //   if (this.checked) {
-  //     taskCompleted(task, index);
-  //   }
-  // });
+  checkbox.id = `isDone`;
 
+if( task.completed== true) checkbox.checked=true;
+
+  checkbox.addEventListener("change", function(){
+    if(checkbox.checked){
+      task.completed= true;
+    }
+    else if(!checkbox.checked){
+      task.completed= false;
+    }
+    taskCompleted(task, index);
+  })
   row.appendChild(checkbox);
 
   const properties = ["name", "date", "details", "priority"];
@@ -139,6 +144,7 @@ async function savetask() {
     window.alert("pls fill task name");
   } else {
     const task = {
+      completed: false,
       name: document.getElementById("task").value,
       date: document.getElementById("taskdate").value,
       details: document.getElementById("taskDetails").value,
@@ -155,15 +161,9 @@ async function savetask() {
 
     const taskList = await response.json();
 
-    taskListElement = document.getElementById("taskList");
-    taskListElement.innerHTML = "";
-
-    taskList.forEach(function (task, index) {
-      const row = createTaskRow(task, index);
-      taskListElement.appendChild(row);
-    });
-    resetForm();
+   renderTaskList(taskList);
   }
+  resetForm();
 }
 
 // Function to reset the form
@@ -183,18 +183,34 @@ function resetForm() {
   };
 }
 
-// async function taskCompleted(task, index) {
-//   alert(`${task.name} task done`);
+async function taskCompleted(task, index) {
+  try {
+    // alert(`${task.name} task done`);
 
-//     const response = await fetch(`${localhostAddress}/${index}`, {
-//       method: "PATCH",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(task),
-//     });
+    const updatedTask = {
+      ...task,
+      // completed: true
+    };
 
-// }
+    const response = await fetch(`${localhostAddress}/${index}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedTask),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error marking task as completed:", response.statusText);
+    }
+
+    const taskList = await response.json();
+    renderTaskList(taskList);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 
 // Function to sort tasks by date
 function sortdate() {

@@ -1,1 +1,1 @@
-[{"name":"task2","date":"","details":" sleep as","priority":"1"},{"name":"task1","date":"","details":"","priority":"1"},{"name":"task3","date":"2024-05-29","details":"eat","priority":"1"},{"name":"tsak4","date":"","details":"","priority":"1"}]
+[{"completed":true,"name":"task1","date":"","details":"","priority":"1"},{"completed":false,"name":"task2","date":"","details":"","priority":"1"}]
