@@ -49,8 +49,6 @@ app.get("/task", (req, res) => {
 // Endpoint to add a new task
 app.post("/task", (req, res) => {
   const newtask = req.body;
-  // console.log("POST request received:", newtask);
-
   const taskList = readTasksFromFile();
   taskList.push(newtask);
   writeTasksToFile(taskList);
@@ -81,15 +79,16 @@ app.delete("/task/:index", (req, res) => {
 // });
 
 app.put("/task/:index", (req, res) => {
+  console.log("in put method")
   const index = req.params.index;
   const updatedTask = req.body;
-
+  console.log(updatedTask)
   let tasks = readTasksFromFile();
 
   tasks[index] = updatedTask;
 
   writeTasksToFile(tasks);
-  res.json(tasks[index]);
+  res.json(tasks);
 });
 
 app.listen(port, () => {

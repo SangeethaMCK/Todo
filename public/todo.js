@@ -128,15 +128,13 @@ async function updateTask(index) {
       body: JSON.stringify(task),
     });
     const changedTask = await response.json();
-    taskListElement = document.getElementById("taskList");
-    taskListElement[index] = changedTask;
-    resetForm();
+    renderTaskList(changedTask);
   }
-  refreshTaskList();
+  resetForm();
 }
 
 // Function to save a task
-async function savetask(index) {
+async function savetask() {
   if (!document.getElementById("task").value) {
     window.alert("pls fill task name");
   } else {
@@ -179,8 +177,10 @@ function resetForm() {
   }
   radios[2].checked = true;
   let addButton = document.getElementById("add-btn");
-  addButton.innerHTML="Save"
-  addButton.onclick = function () {};
+  addButton.innerHTML = "Save"
+  addButton.onclick = function () {
+    savetask();
+  };
 }
 
 // async function taskCompleted(task, index) {
@@ -218,5 +218,4 @@ function renderTaskList(taskList) {
     taskListElement.appendChild(row);
   });
 }
-
 refreshTaskList();
