@@ -1,4 +1,4 @@
-const localhostAddress = "http://localhost:3000/task";
+const localhostAddress = "http://localhost:3000/todos";
 
 // Function to refresh the task list
 async function refreshTaskList() {
@@ -6,8 +6,7 @@ async function refreshTaskList() {
     const response = await fetch(localhostAddress);
     const taskList = await response.json();
     renderTaskList(taskList);
-  } 
-  catch (error) {
+  } catch (error) {
     console.error(error);
   }
 }
@@ -22,6 +21,20 @@ function renderTaskList(taskList) {
   });
 }
 
+async function taskCompleted(isChecked, index) {
+  try {
+    await fetch(`${localhostAddress}/${index}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ completed: isChecked }),
+    });
+
+  } catch (error) {
+    console.error(error);
+  }
+}
 // Function to create a row for a task
 function createTaskRow(task, index) {
   const row = document.createElement("tr");
@@ -30,17 +43,22 @@ function createTaskRow(task, index) {
   checkbox.type = "checkbox";
   checkbox.id = `isDone`;
 
-if( task.completed=== true) checkbox.checked=true;
+  if (task.completed === true) checkbox.checked = true;
 
-  checkbox.addEventListener("change", function(){
-    if(checkbox.checked){
-      task.completed= true;
-    }
-    else{
-      task.completed= false;
-    }
-    taskCompleted(task, index);
-  })
+  checkbox.addEventListener("change", function () {
+    const isChecked = checkbox.checked;
+    taskCompleted(isChecked, index);
+  });
+
+  // checkbox.addEventListener("change", function(){
+  //   if(checkbox.checked){
+  //     task.completed= true;
+  //   }
+  //   else{
+  //     task.completed= false;
+  //   }
+  //   taskCompleted(task, index);
+  // })
   row.appendChild(checkbox);
 
   const properties = ["name", "date", "details", "priority"];
@@ -66,6 +84,7 @@ if( task.completed=== true) checkbox.checked=true;
   delBtn.className = "del-btn";
   delBtn.onclick = function () {
     delTask(index);
+    row.remove(task);
   };
   row.appendChild(delBtn);
 
@@ -75,13 +94,9 @@ if( task.completed=== true) checkbox.checked=true;
 // Function to delete a task
 async function delTask(index) {
   try {
-    const response = await fetch(`${localhostAddress}/${index}`, {
+     await fetch(`${localhostAddress}/${index}`, {
       method: "DELETE",
     });
-    const taskList = await response.json();
-
-   renderTaskList(taskList);
-
   } catch (error) {
     console.error(error);
   }
@@ -112,6 +127,7 @@ async function editTask(task, index) {
 }
 
 async function updateTask(index) {
+  console.log(index)
   if (!document.getElementById("task").value) {
     window.alert("Please fill task name");
   } else {
@@ -122,19 +138,29 @@ async function updateTask(index) {
       priority: document.querySelector('input[name="priority"]:checked').value,
     };
 
-    const response = await fetch(`${localhostAddress}/${index}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(task),
-    });
-    const changedTask = await response.json();
-    renderTaskList(changedTask);
+    try {
+      await fetch(`${localhostAddress}/${index}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(task),
+      });
+
+        const updatedTask = { ...task, completed: false }; 
+        const taskListElement = document.getElementById("taskList");
+        const taskRows = taskListElement.getElementsByTagName("tr");
+
+          const taskRow = taskRows[index];
+          const updatedRow = createTaskRow(updatedTask, index);
+          taskListElement.replaceChild(updatedRow, taskRow);
+    } 
+    catch (error) {
+      console.error(error);
+    }
   }
   resetForm();
 }
-
 // Function to save a task
 async function savetask() {
   if (!document.getElementById("task").value) {
@@ -147,19 +173,21 @@ async function savetask() {
       details: document.getElementById("taskDetails").value,
       priority: document.querySelector('input[name="priority"]:checked').value,
     };
-
-    const response = await fetch(localhostAddress, {
+    try{
+    await fetch(localhostAddress, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(task),
     });
-
-    const taskList = await response.json();
-
-   renderTaskList(taskList);
+    const taskListElement = document.getElementById("taskList");
+    taskrow = createTaskRow(task);
+    taskListElement.appendChild(taskrow);
   }
+catch (error) {
+  console.error(error);
+}}
   resetForm();
 }
 
@@ -174,48 +202,11 @@ function resetForm() {
   }
   radios[2].checked = true;
   let addButton = document.getElementById("add-btn");
-  addButton.innerHTML = "Save"
+  addButton.innerHTML = "Save";
   addButton.onclick = function () {
     savetask();
   };
 }
 
-async function taskCompleted(task, index) {
-  try {
-    const response = await fetch(`${localhostAddress}/${index}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(task),
-    });
-
-    const taskList = await response.json();
-    
-    renderTaskList(taskList);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 refreshTaskList();
 
-
-
-
-
-
-
-// Function to sort tasks by date
-// function sortdate() {
-//   const taskList = JSON.parse(localStorage.getItem("tasks")) || [];
-//   taskList.sort((a, b) => new Date(a.date) - new Date(b.date));
-//   renderTaskList(taskList);
-// }
-
-// // Function to sort tasks by priority
-// function sortpriority() {
-//   const taskList = JSON.parse(localStorage.getItem("tasks")) || [];
-//   taskList.sort((a, b) => b.priority - a.priority);
-//   renderTaskList(taskList);
-// }

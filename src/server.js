@@ -1,98 +1,104 @@
+// server.js
 const express = require("express");
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
-const bodyParser = require("body-parser");
+
 const app = express();
 const port = 3000;
 
-app.use(bodyParser.json());
+app.use(express.json());
 
 const staticPath = path.join(__dirname, "../public");
 app.use(express.static(staticPath));
 
-// Define the path to the todos file
 const todosFilePath = path.join(__dirname, "todos.txt");
 
-// Function to read tasks from the file
-function readTasksFromFile() {
+async function readTodosFromFile() {
   try {
-    const data = fs.readFileSync(todosFilePath, "utf8");
+    const data = await fs.readFile(todosFilePath, "utf8");
     return JSON.parse(data);
   } catch (error) {
-    console.error("Error reading tasks from file:", error);
+    console.error("Error reading todos from file:", error);
     return [];
   }
 }
 
-// Function to write tasks to the file
-function writeTasksToFile(tasks) {
+async function writeTodosToFile(todos) {
   try {
-    fs.writeFileSync(todosFilePath, JSON.stringify(tasks));
+    await fs.writeFile(todosFilePath, JSON.stringify(todos, null, 2));
   } catch (error) {
-    console.error("Error writing tasks to file:", error);
+    console.error("Error writing todos to file:", error);
   }
 }
 
-
-app.get("/task", (req, res) => {
-  const tasks = readTasksFromFile();
-  res.json(tasks);
+app.get("/todos", async (req, res) => {
+  try {
+    const todos = await readTodosFromFile();
+    res.json(todos);
+  } catch (error) {
+    console.error("Error fetching todos:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
-// Endpoint to add a new task
-app.post("/task", (req, res) => {
-  const newtask = req.body;
-  const taskList = readTasksFromFile();
-
-  taskList.push(newtask);
-
-  writeTasksToFile(taskList);
-
-  const newtaskList = readTasksFromFile();
-
-  res.json(newtaskList);
+app.post("/todos", async (req, res) => {
+  try {
+    const newTodo = req.body;
+    const todos = await readTodosFromFile();
+    todos.push(newTodo);
+    await writeTodosToFile(todos);
+    res.status(201).json({ message: "Todo created successfully" });
+  } catch (error) {
+    console.error("Error creating todo:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
-app.delete("/task/:index", (req, res) => {
-  const index = req.params.index;
-
-  tasks = readTasksFromFile();
-  tasks.splice(index, 1);
-
-  writeTasksToFile(tasks);
-
-  const newtaskList = readTasksFromFile();
-
-  res.json(newtaskList);
+app.delete("/todos/:index", async (req, res) => {
+  try {
+    const index = req.params.index;
+    const todos = await readTodosFromFile();
+    todos.splice(index, 1);
+    await writeTodosToFile(todos);
+    res.json({ message: "Todo deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting todo:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
-app.put("/task/:index", (req, res) => {
-  const index = req.params.index;
-  const updatedTask = req.body;
-
-  let tasks = readTasksFromFile();
-
-  tasks[index] = updatedTask;
-
-  writeTasksToFile(tasks);
-
-  res.json(tasks);
+app.put("/todos/:index", async (req, res) => {
+  try {
+    const index = req.params.index;
+    const updatedTodo = req.body;
+    const todos = await readTodosFromFile();
+    todos[index] = updatedTodo;
+    await writeTodosToFile(todos);
+    res.json({ message: "Todo updated successfully" });
+  } catch (error) {
+    console.error("Error updating todo:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
-app.patch("/task/:index", (req, res) => {
-  const index = req.params.index;
-  const updatedTask = req.body;
+app.patch("/todos/:index", async (req, res) => {
+  try {
+    const index = req.params.index;
+    const updatedFields = req.body; 
+    const todos = await readTodosFromFile();
 
-  let tasks = readTasksFromFile();
+    const updatedTodo = { ...todos[index], ...updatedFields };
+    todos[index] = updatedTodo;
 
-  tasks[index].completed = updatedTask.completed;
+    await writeTodosToFile(todos);
 
-  writeTasksToFile(tasks);
-
-  res.json(tasks);
+    res.json({ message: "Todo updated successfully"});
+  } catch (error) {
+    console.error("Error updating todo:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
-
 
 app.listen(port, () => {
-  console.log("Server is running on port", port);
+  console.log(`Server is running on ${port}`);
 });
