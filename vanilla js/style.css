@@ -1,0 +1,55 @@
+*{
+    text-align: center;
+    background-color: rgb(127, 255, 212, 0.6);
+}
+.container1{
+    margin: auto;
+    padding: auto;
+}
+#add-btn{
+    background-color: green;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    height: 30px;
+    width: 100px;
+    font-size: medium;
+}
+.edit-btn{
+    background-color: black;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    height: 30px;
+    width: 50px;
+    margin: 5px;
+}
+.del-btn{
+    background-color: red;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    height: 30px;
+    width: 50px;
+    margin: 5px;
+}
+input,textarea{
+    border-radius: 10px;
+    border-color: black;
+    border-style:solid;
+    height: 30px;
+    background-color: antiquewhite;
+}
+table{
+    border: solid 2px ;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 20px auto;
+    align-items: center;
+}
+td,th{
+    padding: 10px 10px;
+}
+#date-sort, #priority-sort{
+    border: black solid 2px;
+}
